@@ -165,14 +165,17 @@ void creatHuffmanCode(HuffmanTree *huffmanTree, int n) {
 
     free(cd);
     //打印编码序列
+    ofstream ofile;
+//    ofile.open("/Users/mima123/ClionProjects/huffmanApp_c/files/coding.dat");
+    ofile.open("../files/coding.dat", ios::out);
+
     for (i = 1; i <= n; i++) {
         printf("HuffmanCode of %3d is %s, data: %c.\n", (*huffmanTree)[i].weight, huffmanCode[i],
                (*huffmanTree)[i].data);
         //建立文件输出流
-        fstream ofile;
         //打开文件
-        ofile.open("/home/weixian/ClionProjects/huffmanApp_c/files/coding.dat", ios::out);
-//        ofile.open("files/coding.dat", ios::out);
+//        ofile.open("/home/weixian/ClionProjects/huffmanApp_c/files/coding.dat");
+
         //向文件写入字符及对应的编码
         ofile << (*huffmanTree)[i].data << " " << huffmanCode[i] << endl;
     }
@@ -182,26 +185,30 @@ void creatHuffmanCode(HuffmanTree *huffmanTree, int n) {
 
 void codeFile(HuffmanTree *huffmanTree){
 
-    string string1 = "this is a test";
-//    string *code;
-    cout << "string.length:"<< string1.length();
-    for (int i = 0;i<string1.length();i++){
-        char tmp = string1[i];
-        cout << tmp << endl;
-        if (tmp != ' '){
+//    string string1 = "this is a test";
+////    string *code;
+//    cout << "string.length:"<< string1.length();
+//    for (int i = 0;i<string1.length();i++){
+//        char tmp = string1[i];
+//        cout << tmp << endl;
+//        if (tmp != ' '){
+//
+//        for (int j = 0; j < 6; ++j) {
+//            char d = (*huffmanTree)[j].data;
+//            cout <<d<< endl;
+//            if (tmp==d)
+//            {
+//                cout << huffmanCode[j];
+//                break;
+//            }
+//        }
+//        cout << "循环结束一次"<< endl;
+//        }
+//    }
 
-        for (int j = 0; j < 6; ++j) {
-            char d = (*huffmanTree)[j].data;
-            cout <<d<< endl;
-            if (tmp==d)
-            {
-                cout << huffmanCode[j];
-                break;
-            }
-        }
-        cout << "循环结束一次"<< endl;
-        }
-    }
+    ifstream ifile; //文件输入流
+    ofstream ofile; //文件输出流
+   // ifile.open("")
 
 }
 
