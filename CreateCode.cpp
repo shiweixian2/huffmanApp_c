@@ -207,7 +207,7 @@ void codeFile(HuffmanTree *huffmanTree, int n) {
             char c = temp[i];
             for (int j = 1; j <= n; j++) {
                 char data = (*huffmanTree)[j].data;
-                if (c != nullptr) if (c == data) {
+                if (c != 0) if (c == data) {
                     ofile << huffmanCode[j];
                     cout << huffmanCode[j];
                     break;
@@ -232,20 +232,52 @@ void decodeFile(HuffmanTree *huffmanTree) {
 
 void getInput(int *w, char *a, int &n) {
     ifstream ifile; //建立文件输入流
-    ifile.open("/Users/mima123/ClionProjects/huffmanApp_c/files/tobetrans.txt");
-    string temp = "";
+//    ifile.open("/Users/mima123/ClionProjects/huffmanApp_c/files/tobetrans.txt");
+    ifile.open("/home/weixian/ClionProjects/huffmanApp_c/files/testfile");
+    string temp;
     int count = 0;
     int maxLength = 256;
+    char buffer[256];
+
     while (getline(ifile, temp)) {
         count += temp.size();
     }
+    cout << count << endl;
     if (maxLength > count)
         maxLength = count;
     w = (int *) malloc((maxLength + 1) * sizeof(int));
     a = (char *) malloc((maxLength + 1) * sizeof(char));
-    while (getline(ifile, temp)) {
-
+    for (int i = 0; i < maxLength; i++) {
+        w[i] = 0;
+        a[i] = 0;
     }
+    ifile.clear();
+    ifile.seekg(0, ios::beg);
+    while (getline(ifile, temp)) {
+        cout << temp << endl;
+        for (int i = 0; i < temp.size(); ++i) {
+            for (int j = 0; j < maxLength; j++) {
+                if (a[j] != 0) {
+                    if (a[j] != temp[i])
+                        continue;
+                    else {
+                        w[j]++;
+                        break;
+                    }
+
+                } else {
+                    a[j] = temp[i];
+                    w[j]++;
+                    break;
+                }
+            }
+        }
+    }
+    for (int k = 0; k < maxLength && w[k] != 0; k++) {
+        n++;
+    }
+    cout << n << endl;
+    ifile.close();
 }
 
 int main(void) {
@@ -254,37 +286,40 @@ int main(void) {
     int *w, i, n, wei, m;
     char da, *a;
 
-    cout << "请输入字符集的大小：" << endl << "n = ";
-//    printf("\nn = ");
-
-    scanf("%d", &n);
-
-    w = (int *) malloc((n + 1) * sizeof(int));
-    a = (char *) malloc((n + 1) * sizeof(char));
-
-    printf("\ninput the %d element's weight:\n", n);
-
-    cout << "请输入数据:" << endl;
-    for (i = 1; i <= n; i++) {
-        printf("%d: ", i);
+//    cout << "请输入字符集的大小：" << endl << "n = ";
+//
+//    scanf("%d", &n);
+//
+//    w = (int *) malloc((n + 1) * sizeof(int));
+//    a = (char *) malloc((n + 1) * sizeof(char));
+//
+//    printf("\ninput the %d element's weight:\n", n);
+//
+//    cout << "请输入数据:" << endl;
+//    for (i = 1; i <= n; i++) {
+//        printf("%d: ", i);
+////        fflush(stdin);
+////        scanf("%c", &da);
+//        cin >> da;
+//        a[i] = da;
+//    }
+//
+//    cout << "请输入权值:" << endl;
+//    for (i = 1; i <= n; i++) {
+//        printf("%d: ", i);
 //        fflush(stdin);
-//        scanf("%c", &da);
-        cin >> da;
-        a[i] = da;
+//        scanf("%d", &wei);
+//        w[i] = wei;
+//    }
+
+    getInput(w, a, n);
+    cout << "n: " << n << endl;
+    for (int k = 0; k < n; k++) {
+        cout << "w: " << w[k] << "  " << "a: " << a[k] << endl;
     }
-
-    cout << "请输入权值:" << endl;
-    for (i = 1; i <= n; i++) {
-        printf("%d: ", i);
-        fflush(stdin);
-        scanf("%d", &wei);
-        w[i] = wei;
-    }
-
-
-    createHuffmanTree(&HT, w, a, n);
-    creatHuffmanCode(&HT, n);
-    codeFile(&HT, n);
+//    createHuffmanTree(&HT, w, a, n);
+//    creatHuffmanCode(&HT, n);
+//    codeFile(&HT, n);
 
 
     return 0;
