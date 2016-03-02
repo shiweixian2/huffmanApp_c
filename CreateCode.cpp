@@ -10,6 +10,7 @@ using namespace std;
 
 #include <iostream>
 #include <fstream>
+#include <queue>
 
 
 //haffman 树的结构
@@ -23,9 +24,30 @@ typedef struct {
     char data;
 } Node, *HuffmanTree;
 
+//保存树的权值和数据的数组
+typedef struct {
+    int *w;
+    char *a;
+} HNode;
+
+
 //动态分配数组，存储哈夫曼编码
 typedef char *HuffmanCode;
 HuffmanCode *huffmanCode;
+
+string rootPath = "/Users/mima123/ClionProjects/huffmanApp_c/files/";
+//要被转换为01代码的原始文本文件
+string tobeTransPath = rootPath + "tobetrans.txt";
+//存放01代码的文本文件
+string codefilePath = rootPath + "codefile";
+//存放转码后文本的文件
+string decodefilePath = rootPath + "textfile";
+//存放字符及对应的01代码
+string codingFilePath = rootPath + "coding.dat";
+//压缩文件
+string compressFilePath = rootPath + "compress";
+//解压缩后的文本文件
+string decompressFilePah = rootPath + "decompress";
 
 //选择两个parent为0，且weight最小的结点s1和s2的方法实现
 //n 为叶子结点的总数，s1和 s2两个指针参数指向要选取出来的两个权值最小的结点
@@ -192,17 +214,13 @@ void creatHuffmanCode(HuffmanTree *huffmanTree, int n) {
  */
 void codeFile(HuffmanTree *huffmanTree, int n) {
 
-    char buffer[256];
-
-    ifstream ifile; //文件输入流
-    ofstream ofile; //文件输出流
-    ifile.open("/Users/mima123/ClionProjects/huffmanApp_c/files/tobetrans.txt");
-    ofile.open("/Users/mima123/ClionProjects/huffmanApp_c/files/codefile");
+    fstream ifile; //文件输入流
+    fstream ofile; //文件输出流
+    ifile.open("/Users/mima123/ClionProjects/huffmanApp_c/files/tobetrans.txt", ios::in | ios::binary);
+    ofile.open("/Users/mima123/ClionProjects/huffmanApp_c/files/codefile", ios::out | ios::binary);
     string temp;
     cout << "codeFile方法里打印编码文件:" << endl;
-    while (!ifile.eof()) {
-        ifile.getline(buffer, 10);
-        ifile >> temp;
+    while (getline(ifile, temp)) {
         for (int i = 0; i < temp.length(); ++i) {
             char c = temp[i];
             for (int j = 1; j <= n; j++) {
@@ -214,9 +232,114 @@ void codeFile(HuffmanTree *huffmanTree, int n) {
                 }
             }
         }
+        ofile << endl;
     }
-
+    ifile.close();
+    ofile.close();
 }
+
+int tot = 0;
+char mystr[15000];
+
+
+/**
+ * 将01代码进行压缩
+ */
+void compress() {
+    ifstream fp1; //存放
+    ofstream fp2;
+    fp1.open(codefilePath);
+    if (!fp1)//检查文件是否打开。
+    {
+        cerr << "不能打开 " << codefilePath << "文件" << endl;//输出文件未打开的标志。
+        exit(0);
+    }
+//    cout<<"输入文件名用来存放压缩后的文件"<<endl<<"例如huffman3.txt"<<endl;
+//    cin>>s2;
+    char inchar, ch;
+    fp2.open(compressFilePath);
+    if (!fp2)//检查文件是否打开。
+    {
+        cerr << "不能打开 " << compressFilePath << "文件" << endl;//输出文件未打开的标志。
+        exit(0);
+    }
+    int t = 0, f = 0, s;
+    //char a[8];
+    while (!fp1.eof()) {
+        fp1 >> inchar;
+        s = inchar - '0';
+        t *= 2;
+        t += s;
+        f++;
+        if (f == 7) {
+            ch = t;
+            t = 0;
+            fp2 << ch;
+            cout << ch;
+            mystr[tot++] = ch;
+            f = 0;
+        }
+    }
+    mystr[tot] = '\0';
+    fp1.close();
+    fp2.close();
+}
+
+
+queue<int> s;
+
+void decompress(HuffmanTree *huffman, int n) {
+    ifstream fp1;
+    ofstream fp2;
+    fp1.open(compressFilePath);
+    if (!fp1)//检查文件是否打开。
+    {
+        cerr << "不能打开 " << compressFilePath << "文件" << endl;//输出文件未打开的标志。
+        exit(0);
+    }
+//    cout<<"输入文件名用来存放解压后的文件"<<endl<<"例如huffman4.txt"<<endl;
+//    cin>>s3;
+    fp2.open(decompressFilePah);
+    if (!fp2)//检查文件是否打开。
+    {
+        cout << "不能打开 " << decompressFilePah << "文件" << endl;//输出文件未打开的标志。
+        exit(0);
+    }
+    int inchar;
+    int i = 0;
+    while (!s.empty())s.pop();
+    for (int ptr = n; i < tot;) {
+        if (s.size() < 3) {
+            char ch;
+            int num, a[8];
+            fp1 >> ch;
+            ch = mystr[i++];
+            num = ch;
+            for (int i = 6; i >= 0; i--) {
+                a[i] = num % 2;
+                num /= 2;
+            }
+
+            for (int i = 0; i < 7; i++) {
+                //ch=a[i]+'0';
+                s.push(a[i]);
+            }
+        }
+        inchar = s.front();
+        s.pop();
+        if (inchar == 1)ptr = huffman[ptr]->rChild;//查找相应编码对应huffman树中的位置，
+        else ptr = huffman[ptr]->lChild;
+        if (huffman[ptr]->lChild == 0 && huffman[ptr]->rChild == 0)//判断是否为叶子结点；
+        {
+            fp2 << huffman[ptr]->data;
+            ptr = n;
+        }//是叶子结点，将该结点的对应字符输入到文件中；
+    }
+    fp1.close();
+    fp2.close();
+}
+
+
 
 void decodeFile(HuffmanTree *huffmanTree) {
     ifstream ifile; //文件输入流
@@ -230,14 +353,16 @@ void decodeFile(HuffmanTree *huffmanTree) {
     }
 }
 
-void getInput(int *w, char *a, int &n) {
+/**
+ * 从原始原件获取字符的个数,种类,权值
+ */
+void getInput(HNode &node, int &n) {
     ifstream ifile; //建立文件输入流
-//    ifile.open("/Users/mima123/ClionProjects/huffmanApp_c/files/tobetrans.txt");
-    ifile.open("/home/weixian/ClionProjects/huffmanApp_c/files/testfile");
+    ifile.open("/Users/mima123/ClionProjects/huffmanApp_c/files/tobetrans.txt");
+//    ifile.open("/home/weixian/ClionProjects/huffmanApp_c/files/testfile");
     string temp;
     int count = 0;
     int maxLength = 256;
-    char buffer[256];
 
     while (getline(ifile, temp)) {
         count += temp.size();
@@ -245,11 +370,11 @@ void getInput(int *w, char *a, int &n) {
     cout << count << endl;
     if (maxLength > count)
         maxLength = count;
-    w = (int *) malloc((maxLength + 1) * sizeof(int));
-    a = (char *) malloc((maxLength + 1) * sizeof(char));
+    node.w = (int *) malloc((maxLength + 1) * sizeof(int));
+    node.a = (char *) malloc((maxLength + 1) * sizeof(char));
     for (int i = 0; i < maxLength; i++) {
-        w[i] = 0;
-        a[i] = 0;
+        node.w[i] = 0;
+        node.a[i] = 0;
     }
     ifile.clear();
     ifile.seekg(0, ios::beg);
@@ -257,34 +382,36 @@ void getInput(int *w, char *a, int &n) {
         cout << temp << endl;
         for (int i = 0; i < temp.size(); ++i) {
             for (int j = 0; j < maxLength; j++) {
-                if (a[j] != 0) {
-                    if (a[j] != temp[i])
+                if (node.a[j] != 0) {
+                    if (node.a[j] != temp[i])
                         continue;
                     else {
-                        w[j]++;
+                        node.w[j]++;
                         break;
                     }
 
                 } else {
-                    a[j] = temp[i];
-                    w[j]++;
+                    node.a[j] = temp[i];
+                    node.w[j]++;
                     break;
                 }
             }
         }
     }
-    for (int k = 0; k < maxLength && w[k] != 0; k++) {
+    for (int k = 0; k < maxLength && node.w[k] != 0; k++) {
         n++;
+        cout << node.w[k] << " ";
     }
     cout << n << endl;
     ifile.close();
 }
 
-int main(void) {
+
+int main() {
     HuffmanTree HT;
     HuffmanCode HC;
-    int *w, i, n, wei, m;
-    char da, *a;
+    int i = 0, n = 0, wei, m;
+    char da;
 
 //    cout << "请输入字符集的大小：" << endl << "n = ";
 //
@@ -312,15 +439,22 @@ int main(void) {
 //        w[i] = wei;
 //    }
 
-    getInput(w, a, n);
+    HNode node;
+    getInput(node, n);
     cout << "n: " << n << endl;
     for (int k = 0; k < n; k++) {
-        cout << "w: " << w[k] << "  " << "a: " << a[k] << endl;
+        cout << "w: " << node.w[k] << "  " << "a: " << node.a[k] << endl;
     }
-//    createHuffmanTree(&HT, w, a, n);
-//    creatHuffmanCode(&HT, n);
-//    codeFile(&HT, n);
+    createHuffmanTree(&HT, node.w, node.a, n);
+    creatHuffmanCode(&HT, n);
+    codeFile(&HT, n);
+    cout << endl << "compress" << endl;
+    compress();
+    cout << endl << "decompress" << endl;
 
+    decompress(&HT, n);
 
+    delete[]node.a;
+    delete[]node.w;
     return 0;
 }
