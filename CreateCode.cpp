@@ -165,17 +165,17 @@ void creatHuffmanCode(HuffmanTree *huffmanTree, int n) {
 
     free(cd);
     //打印编码序列
+
+    //建立文件输出流
     ofstream ofile;
-//    ofile.open("/Users/mima123/ClionProjects/huffmanApp_c/files/coding.dat");
-    ofile.open("../files/coding.dat", ios::out);
+    //打开文件
+    ofile.open("/Users/mima123/ClionProjects/huffmanApp_c/files/coding.dat");
+//    ofile.open("/home/weixian/ClionProjects/huffmanApp_c/files/coding.dat");
+//    ofile.open("../files/coding.dat", ios::out);
 
     for (i = 1; i <= n; i++) {
         printf("HuffmanCode of %3d is %s, data: %c.\n", (*huffmanTree)[i].weight, huffmanCode[i],
                (*huffmanTree)[i].data);
-        //建立文件输出流
-        //打开文件
-//        ofile.open("/home/weixian/ClionProjects/huffmanApp_c/files/coding.dat");
-
         //向文件写入字符及对应的编码
         ofile << (*huffmanTree)[i].data << " " << huffmanCode[i] << endl;
     }
@@ -183,7 +183,7 @@ void creatHuffmanCode(HuffmanTree *huffmanTree, int n) {
     printf("\n");
 }
 
-void codeFile(HuffmanTree *huffmanTree){
+void codeFile(HuffmanTree *huffmanTree, int n) {
 
 //    string string1 = "this is a test";
 ////    string *code;
@@ -205,10 +205,29 @@ void codeFile(HuffmanTree *huffmanTree){
 //        cout << "循环结束一次"<< endl;
 //        }
 //    }
+    char buffer[256];
 
     ifstream ifile; //文件输入流
     ofstream ofile; //文件输出流
-   // ifile.open("")
+    ifile.open("/Users/mima123/ClionProjects/huffmanApp_c/files/tobetrans.txt");
+    ofile.open("/Users/mima123/ClionProjects/huffmanApp_c/files/codefile");
+    string temp;
+    cout << "codeFile方法里打印编码文件:" << endl;
+    while (!ifile.eof()) {
+        ifile.getline(buffer, 10);
+        ifile >> temp;
+        for (int i = 0; i < temp.length(); ++i) {
+            char c = temp[i];
+            for (int j = 1; j <= n; j++) {
+                char data = (*huffmanTree)[j].data;
+                if (c != nullptr) if (c == data) {
+                    ofile << huffmanCode[j];
+                    cout << huffmanCode[j];
+                    break;
+                }
+            }
+        }
+    }
 
 }
 
@@ -247,7 +266,7 @@ int main(void) {
 
 
     createHuffmanTree(&HT, w, a, n);
-    creatHuffmanCode(&HT,n);
+    creatHuffmanCode(&HT, n);
     codeFile(&HT);
 
 
