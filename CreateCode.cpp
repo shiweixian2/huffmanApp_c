@@ -183,28 +183,15 @@ void creatHuffmanCode(HuffmanTree *huffmanTree, int n) {
     printf("\n");
 }
 
+/**
+ * 对文件进行编码
+ *
+ * 参数说明:
+ *       huffmanTree -- 哈弗曼树
+ *       n -- 叶节点的个数,就是函数字符的节点个数
+ */
 void codeFile(HuffmanTree *huffmanTree, int n) {
 
-//    string string1 = "this is a test";
-////    string *code;
-//    cout << "string.length:"<< string1.length();
-//    for (int i = 0;i<string1.length();i++){
-//        char tmp = string1[i];
-//        cout << tmp << endl;
-//        if (tmp != ' '){
-//
-//        for (int j = 0; j < 6; ++j) {
-//            char d = (*huffmanTree)[j].data;
-//            cout <<d<< endl;
-//            if (tmp==d)
-//            {
-//                cout << huffmanCode[j];
-//                break;
-//            }
-//        }
-//        cout << "循环结束一次"<< endl;
-//        }
-//    }
     char buffer[256];
 
     ifstream ifile; //文件输入流
@@ -229,6 +216,36 @@ void codeFile(HuffmanTree *huffmanTree, int n) {
         }
     }
 
+}
+
+void decodeFile(HuffmanTree *huffmanTree) {
+    ifstream ifile; //文件输入流
+    ofstream ofile; //文件输出流
+    ifile.open("/Users/mima123/ClionProjects/huffmanApp_c/files/codefile");
+    ofile.open("/Users/mima123/ClionProjects/huffmanApp_c/files/textfile");
+    string temp;
+    cout << "decodeFile方法打印编码文件:" << endl;
+    while (!ifile.eof()) {
+
+    }
+}
+
+void getInput(int *w, char *a, int &n) {
+    ifstream ifile; //建立文件输入流
+    ifile.open("/Users/mima123/ClionProjects/huffmanApp_c/files/tobetrans.txt");
+    string temp = "";
+    int count = 0;
+    int maxLength = 256;
+    while (getline(ifile, temp)) {
+        count += temp.size();
+    }
+    if (maxLength > count)
+        maxLength = count;
+    w = (int *) malloc((maxLength + 1) * sizeof(int));
+    a = (char *) malloc((maxLength + 1) * sizeof(char));
+    while (getline(ifile, temp)) {
+
+    }
 }
 
 int main(void) {
@@ -267,7 +284,7 @@ int main(void) {
 
     createHuffmanTree(&HT, w, a, n);
     creatHuffmanCode(&HT, n);
-    codeFile(&HT);
+    codeFile(&HT, n);
 
 
     return 0;
